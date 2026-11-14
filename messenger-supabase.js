@@ -86,7 +86,7 @@
     currentUserId = uid();
     if (!currentUser) throw new Error("Your Messenger profile was not found. Please sign out and register again.");
     window.renderLists();
-    if (window.activeChat) window.renderMessages();
+    if (activeChat) window.renderMessages();
   }
 
   async function loadActiveMessages() {
@@ -160,7 +160,7 @@
       const button = $("auth-submit-btn");
       button.disabled = true; button.textContent = "Please wait...";
       try {
-        if (window.isRegisterMode) {
+        if (isRegisterMode) {
           const name = $("reg-name").value.trim();
           if (!name) throw new Error("Please enter your full name.");
           const rawAvatar = $("reg-avatar-preview").src;
@@ -190,7 +190,7 @@
           await initAfterAuth(data.user);
         }
       } catch (e) { fail(e); }
-      finally { button.disabled = false; button.textContent = window.isRegisterMode ? "Sign Up" : "Log In"; }
+      finally { button.disabled = false; button.textContent = isRegisterMode ? "Sign Up" : "Log In"; }
     };
 
     window.logout = async function () {
