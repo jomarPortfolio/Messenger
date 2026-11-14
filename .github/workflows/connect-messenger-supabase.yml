@@ -1,0 +1,40 @@
+name: Connect Messenger to Supabase
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/connect-messenger-supabase.yml"
+permissions:
+  contents: write
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Supabase client and adapter
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("index.html")
+          html = p.read_text(encoding="utf-8")
+          if "messenger-supabase.js" not in html:
+              tag = '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>\n  <script src="./messenger-supabase.js"></script>\n  <script>'
+              if "<script>" not in html:
+                  raise SystemExit("Could not locate the app script tag in index.html")
+              html = html.replace("<script>", tag, 1)
+          html = re.sub(r'const defaultUsers = \[.*?\n\s*\];\s*\n\s*let users = JSON\.parse\(localStorage\.getItem\("msg_pro_users"\)\) \|\| defaultUsers;\s*\n\s*let groups = JSON\.parse\(localStorage\.getItem\("msg_pro_groups"\)\) \|\| \[\];\s*\n\s*let messages = JSON\.parse\(localStorage\.getItem\("msg_pro_messages"\)\) \|\| \[\];\s*\n\s*let currentUserId = localStorage\.getItem\("msg_pro_logged_in_id"\) \|\| null;',
+                  'const defaultUsers = [];\n    let users = [];\n    let groups = [];\n    let messages = [];\n    let currentUserId = null;', html, count=1, flags=re.S)
+          html = html.replace('<input type="text" id="auth-username" placeholder="Username or Email" />',
+                              '<input type="email" id="auth-username" placeholder="Email address" autocomplete="email" />')
+          html = re.sub(r'\s*<p style="margin-top: 14px; font-size: 12px;">\s*Demo accounts:.*?</p>', '', html, flags=re.S)
+          html = html.replace('let currentUserId = localStorage.getItem("msg_pro_logged_in_id") || null;', 'let currentUserId = null;')
+          p.write_text(html, encoding="utf-8")
+          PY
+      - name: Commit connected app
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Connect Messenger Pro to Supabase Auth and cloud data"
+          git push
