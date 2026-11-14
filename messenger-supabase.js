@@ -166,7 +166,7 @@
           const rawAvatar = $("reg-avatar-preview").src;
           const { data, error } = await sb.auth.signUp({
             email, password,
-            options: { data: { display_name:name, username:email.split("@")[0] } }
+            options: { data: { app:"messenger", role:"messenger", display_name:name, username:email.split("@")[0] } }
           });
           if (error) throw error;
           if (!data.session) {
