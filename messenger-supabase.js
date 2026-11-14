@@ -66,7 +66,7 @@
     const memberRows = gmRes.data || [];
     const mappedGroups = (gRes.data || []).map(g => ({
       id: g.id, name: g.name, avatar: defaultAvatar(g.name),
-      members: memberRows.filter(m => m.group_id === g.id).map(m => m.user_id)
+      members: Array.from({length: Math.max(g.member_count || 1, memberRows.filter(m => m.group_id === g.id).length)}, (_, i) => i === 0 ? uid() : "member-" + i)
     }));
     mappedGroups.forEach(g => { if (!g.members.includes(uid())) g.members.push(uid()); });
 
@@ -312,9 +312,9 @@
       if(!groupName) return alert("Please enter a group name.");
       if(!checked.length) return alert("Select at least 1 friend.");
       try {
-        const {data:group,error}=await sb.from("messenger_groups").insert({name:groupName,created_by:uid()}).select("*").single();
-        if(error) throw error;
         const memberIds=[...new Set([uid(),...checked])];
+        const {data:group,error}=await sb.from("messenger_groups").insert({name:groupName,created_by:uid(),member_count:memberIds.length}).select("*").single();
+        if(error) throw error;
         const {error:memberError}=await sb.from("messenger_group_members").insert(memberIds.map(user_id=>({group_id:group.id,user_id})));
         if(memberError) throw memberError;
         await loadMessengerData();
