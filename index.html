@@ -2418,7 +2418,7 @@ Cruz)" />
 
    <div class="input-group">
 
-    <input type="text" id="auth-username" placeholder="Username or Email" />
+    <input type="email" id="auth-username" placeholder="Email address" autocomplete="email" />
 
    </div>
 
@@ -2451,12 +2451,6 @@ In</button>
 account</span>
 
    </div>
-
-   <p style="margin-top: 14px; font-size: 12px;">
-
-    Demo accounts: <b>maria</b> / <b>123</b> or <b>pedro</b> / <b>123</b>
-
-   </p>
 
   </div>
 
@@ -3081,7 +3075,9 @@ onclick="toggleMicMute()">
 
 
 
- <script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>
+  <script src="./messenger-supabase.js"></script>
+  <script>
 
   //
 =====================================================================
@@ -3105,85 +3101,11 @@ Image URL)
  // ================= INITIAL DATA & PERSISTENT STORAGE
 =================
 
- const defaultUsers = [
-
-  {
-
-      id: "u1",
-
-      username: "maria",
-
-      password: "123",
-
-      name: "Maria Clara",
-
-      bio: "Living life one message at a time.",
-
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
-
-      gallery: ["", "", ""],
-
-      friends: ["u2", "u3"],
-
-      mutedChats: []
-
-  },
-
-  {
-
-      id: "u2",
-
-     username: "pedro",
-
-     password: "123",
-
-     name: "Pedro Penduko",
-
-     bio: "Adventure & Coding.",
-
-     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Pedro",
-
-     gallery: ["", "", ""],
-
-     friends: ["u1"],
-
-     mutedChats: []
-
- },
-
- {
-
-     id: "u3",
-
-     username: "anna",
-
-     password: "123",
-
-     name: "Anna Santos",
-
-     bio: "Coffee lover.",
-
-     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anna",
-
-     gallery: ["", "", ""],
-
-     friends: ["u1"],
-
-     mutedChats: []
-
- }
-
-];
-
-
-
-let users = JSON.parse(localStorage.getItem("msg_pro_users")) || defaultUsers;
-
-let groups = JSON.parse(localStorage.getItem("msg_pro_groups")) || [];
-
-let messages = JSON.parse(localStorage.getItem("msg_pro_messages")) || [];
-
-let currentUserId = localStorage.getItem("msg_pro_logged_in_id") || null;
+ const defaultUsers = [];
+    let users = [];
+    let groups = [];
+    let messages = [];
+    let currentUserId = null;
 
 let isDarkMode = localStorage.getItem("msg_pro_dark_mode") === "true";
 
